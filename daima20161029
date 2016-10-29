@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 24 13:56:09 2016
+
+@author: snailtiny
+"""
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+from pyquery import PyQuery as pq
+from bs4 import BeautifulSoup
+import re
+import numpy as np
+
+browser = webdriver.Chrome() # Get local session of firefox
+time.sleep(2)
+
+browser.get("http://erp.njrts.edu.cn:8000/login.portal") # Load page
+a = browser.page_source
+browser.find_element_by_id('username').click()
+browser.find_element_by_id('username').send_keys('2016620101')
+browser.find_element_by_id('password').click()
+browser.find_element_by_id('password').send_keys('312050')
+browser.find_element_by_name('btn').click()#登陆教师个人校园ERP系统
+
+time.sleep(5)
+a1 = browser.find_element_by_link_text("教务系统").click()#点击超链接‘教务系统’
+
+time.sleep(3)
+a2 = browser.window_handles
+browser.switch_to.window(a2[1])#将标签窗口切换到教务管理系统
+
+time.sleep(1)
+a3 = browser.find_element_by_link_text("学生成绩查询").click()
+#browser.find_element_by_link_text("学生成绩查询").click()
+time.sleep(2)
+browser.find_element_by_xpath('/html/body/div/div[1]/ul/li[6]/ul/li[1]').click()#点击‘学生成绩查询’子项
+browser.switch_to_frame('frame_content')
+time.sleep(1)
+a4 = browser.page_source
+#time.sleep(1)
+#browser.find_element_by_xpath('/html/body/form/div[3]/div[2]/p[1]/select[1]').click()
+time.sleep(1)
+browser.find_element_by_id('TextBox1').click()
+browser.find_element_by_id('TextBox1').send_keys('1531050416')#输入学号
+browser.find_element_by_name('Button5').click()
+time.sleep(2)
+browser.find_element_by_name('Button2').click()
+time.sleep(1)
+a4 = browser.page_source
+
+x2=re.findall('(?<=<td>).*?(?=</td>)',a4)
+
+list=[[0 for i in range(15)]for i in range(24)]#生成25行15列的二维列表
+for i in range(24):
+    for j in range(15):
+        j1=j+i*15
+        list[i][j]=x2[j1]# 将x2数据自赋给二维序列
